@@ -1,12 +1,13 @@
 from manim import *
 import math
+import numpy as np
 
 class ChallengeScene(Scene):
     def construct(self):
         # Setup
         # Create base
         base = Square(side_length=1.0, fill_opacity=1, color=BLUE)
-        base.move_to(DOWN * 2)
+        base.move_to(DOWN * 3 + UP * 0.5)
         initial_base_pos = base.get_center()
 
         # Create object to balance
@@ -22,7 +23,7 @@ class ChallengeScene(Scene):
             start=LEFT * 7,
             end=RIGHT * 7,
             color=GRAY
-        ).next_to(base, DOWN, buff=0.5)
+        ).move_to(DOWN * 3)
 
         # Create text
         challenge_text = Text("Problem: Learning to balance the rod").move_to(UP * 2.5)
@@ -93,3 +94,62 @@ class ChallengeScene(Scene):
         # Show text
         self.play(Write(challenge_text))
         self.wait(2)
+
+        # Solution text
+        solution_text = Text("Solution: TPG - Tangled Program Graphs", color=GREEN).move_to(UP * 2.5)
+        explanation_text = Text("A team-based approach where programs work together\nto learn optimal balancing strategies", font_size=24).next_to(solution_text, DOWN)
+
+        # Transform challenge text to solution text
+        self.play(
+            Transform(challenge_text, solution_text),
+            Write(explanation_text)
+        )
+        self.wait(2)
+
+        # Create team circle
+        team_circle = Circle(radius=1.5, color=BLUE)
+        team_circle.move_to(ORIGIN)
+        team_label = Text("Decision Team", font_size=24).move_to(team_circle.get_center())
+
+        # First transform the rod into a tree structure
+        tree_branches = VGroup()
+        main_branch = Line(
+            start=base.get_top(),
+            end=base.get_top() + UP * 2,
+            stroke_width=6,
+            color=GREEN
+        )
+        side_branches = VGroup(
+            Line(
+                start=main_branch.get_center(),
+                end=main_branch.get_center() + RIGHT * 0.5 + UP * 0.5,
+                stroke_width=4,
+                color=GREEN
+            ),
+            Line(
+                start=main_branch.get_center(),
+                end=main_branch.get_center() + LEFT * 0.5 + UP * 0.5,
+                stroke_width=4,
+                color=GREEN
+            )
+        )
+        tree_branches.add(main_branch, side_branches)
+
+        # Transform rod to tree
+        self.play(
+            Transform(object_to_balance, tree_branches),
+            FadeOut(explanation_text),
+            run_time=1.5
+        )
+        self.wait(1)
+
+        # Then fade tree into team circle and remove original elements
+        self.play(
+            Transform(tree_branches, team_circle),
+            FadeIn(team_label),
+            FadeOut(base),
+            FadeOut(ground),
+            FadeOut(object_to_balance),
+            run_time=1.5
+        )
+        self.wait(3)

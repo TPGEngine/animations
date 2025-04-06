@@ -178,22 +178,12 @@ class HierarchyScene(Scene):
         )
         self.wait(0.5)
 
-        # Animation 5: Add final action and connection
-        self.play(
-            Create(final_action),
-            Write(final_action_label),
-            run_time=1
-        )
-        self.play(
-            GrowArrow(arrow5),
-            run_time=1
-        )
-        self.wait(0.5)
-
         # Animation 6: Show information flow using MoveAlongPath
-        # Create a dot to move along the paths
-        dot = Dot(color=YELLOW, radius=0.1)
-        dot.move_to(team_a_target.get_center())
+        # Create dots for each input
+        input1_dot = Dot(color=YELLOW, radius=0.1)
+        input2_dot = Dot(color=RED, radius=0.1)
+        input1_dot.move_to(team_a_target.get_center())
+        input2_dot.move_to(team_a_target.get_center())
 
         # Create smooth paths using VMobject
         def create_path(*arrows):
@@ -208,17 +198,35 @@ class HierarchyScene(Scene):
         path1 = create_path(arrow1, arrow3, arrow5)
         path2 = create_path(arrow2, arrow4, arrow5)
 
-        # Animate along paths
+        # Create a circle to transform into
+        circle_action = Circle(radius=0.25, color=PURPLE)
+        circle_action.move_to(final_action.get_center())
+        circle_action_label = Text("Action", font_size=24).next_to(circle_action, DOWN, buff=0.2)
+
+        # Animate first input through path1
         self.play(
-            MoveAlongPath(dot, path1, rate_func=rate_functions.ease_in_out_sine),
+            MoveAlongPath(input1_dot, path1, rate_func=rate_functions.ease_in_out_sine),
             run_time=3
         )
         self.wait(0.5)
+        
+        # Create final action and arrow after first input completes
         self.play(
-            MoveAlongPath(dot, path2, rate_func=rate_functions.ease_in_out_sine),
+            Create(final_action),
+            Write(final_action_label),
+            GrowArrow(arrow5),
+            run_time=1
+        )
+        self.play(FadeOut(input1_dot))
+
+        # Animate second input through path2 and transform the action
+        self.play(
+            MoveAlongPath(input2_dot, path2, rate_func=rate_functions.ease_in_out_sine),
+            Transform(final_action, circle_action),
+            Transform(final_action_label, circle_action_label),
             run_time=3
         )
-        self.play(FadeOut(dot))
+        self.play(FadeOut(input2_dot))
 
         # Hold final state
         self.wait(0.5)

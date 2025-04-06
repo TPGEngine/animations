@@ -153,6 +153,10 @@ class EvolutionScene(Scene):
             self.wait(1)  # Longer wait to emphasize the empty space
 
             if gen == 0:  # First generation: Crossover
+                self.play(
+                    FadeOut(initial_state),
+                    run_time=0.5
+                )
                 # Use teams[1] and teams[2] for crossover (avoiding the deleted position)
                 parent1 = teams[1]
                 parent2 = teams[2]
@@ -271,4 +275,51 @@ class EvolutionScene(Scene):
             
             self.wait(0.5)
 
+        self.wait(2)
+
+        # Zoom into bottom left team and transition to simple diagram
+        bottom_left_team = teams[2]  # The bottom left team
+        
+        # Create the target simple diagram
+        target_team = Circle(radius=0.5, color=BLUE)
+        target_team.move_to(LEFT * 2)
+        team_a_label = Text("Team A", font_size=24).next_to(target_team, UP, buff=0.2)
+        
+        target_action = Square(side_length=0.5, color=RED)
+        target_action.move_to(RIGHT * 2)
+        action_label = Text("Action", font_size=24).next_to(target_action, DOWN, buff=0.2)
+        
+        target_arrow = Arrow(
+            start=target_team.get_right(),
+            end=target_action.get_left(),
+            buff=0.2,
+            color=GREEN
+        )
+        
+        target_group = VGroup(target_team, team_a_label, target_action, action_label, target_arrow)
+        target_group.move_to(ORIGIN)  # Center the entire group
+        
+        # Fade out other teams and generation counter
+        self.play(
+            FadeOut(initial_state),  # Add the initial state to fade out
+            FadeOut(teams[0]),
+            FadeOut(teams[1]),
+            FadeOut(teams[3]),
+            FadeOut(generation_text),
+            FadeOut(generation_number),
+            run_time=1
+        )
+        
+        # Zoom into the bottom left team
+        self.play(
+            bottom_left_team.animate.scale(2.5).move_to(ORIGIN),
+            run_time=1.5
+        )
+        
+        # Transform into simple diagram
+        self.play(
+            Transform(bottom_left_team, target_group),
+            run_time=1.5
+        )
+        
         self.wait(2)
