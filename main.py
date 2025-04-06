@@ -1,6 +1,7 @@
-def main():
-    print("Hello from animations!")
+from manim import *
 
+def main():
+    pass
 
 if __name__ == "__main__":
     main()
