@@ -1,6 +1,44 @@
 from manim import *
+import random
 
 class HierarchyScene(Scene):
+    def create_complex_node(self, position, node_id, colors=None):
+        """Create a complex node with multiple color segments."""
+        if colors is None:
+            # Default colors if none provided
+            colors = [BLUE, RED, YELLOW, GREEN, PURPLE]
+            random.shuffle(colors)
+            colors = colors[:random.randint(2, 5)]  # Use 2-5 colors
+        
+        # Create circle with segments
+        radius = 0.25  # Reduced radius for better fit
+        circle = Circle(radius=radius)
+        segments = VGroup()
+        
+        # Create pie segments
+        num_segments = len(colors)
+        for i, color in enumerate(colors):
+            angle_start = i * TAU / num_segments
+            angle_end = (i + 1) * TAU / num_segments
+            segment = AnnularSector(
+                inner_radius=0,
+                outer_radius=radius,
+                angle=angle_end - angle_start,
+                start_angle=angle_start,
+                color=color,
+                fill_opacity=1
+            )
+            segments.add(segment)
+        
+        # Add node ID
+        node_id_text = Text(str(node_id), font_size=14, color=WHITE)  # Smaller font
+        node_id_text.move_to(circle.get_center())
+        
+        # Group everything
+        node = VGroup(segments, node_id_text)
+        node.move_to(position)
+        return node
+
     def construct(self):
         # Cleanup: Fade out previous scene elements
         if self.mobjects:
@@ -182,5 +220,136 @@ class HierarchyScene(Scene):
         )
         self.play(FadeOut(dot))
 
+        # Hold final state
+        self.wait(0.5)
+
+        # Store the current hierarchy state
+        hierarchy_group = VGroup(
+            team_a, team_a_label,
+            team_b, team_b_label,
+            team_c, team_c_label,
+            team_d, team_d_label,
+            final_action, final_action_label,
+            arrow1, arrow2, arrow3, arrow4, arrow5
+        )
+        
+        # Transition text
+        transition_text = Text("Evolving into a complex program graph...", font_size=32)
+        transition_text.to_edge(UP)
+        
+        # Show transition text
+        self.play(
+            Write(transition_text),
+            run_time=1
+        )
+        self.wait(0.5)
+        
+        # Create complex nodes
+        nodes = VGroup()
+        
+        # Define clear hierarchical levels
+        LEVEL_SPACING = 1.25  # Vertical spacing between levels
+        NODE_SPACING = 1.5    # Horizontal spacing between nodes
+        
+        # Level 1 (Top) - Root node
+        level1_y = 2.5
+        node_positions = [
+            ORIGIN + UP * level1_y,  # Node 1 (root)
+        ]
+        
+        # Level 2
+        level2_y = level1_y - LEVEL_SPACING
+        level2_nodes = 3
+        for i in range(level2_nodes):
+            x = (i - 1) * NODE_SPACING
+            node_positions.append(RIGHT * x + UP * level2_y)  # Nodes 2-4
+        
+        # Level 3
+        level3_y = level2_y - LEVEL_SPACING
+        level3_nodes = 4
+        for i in range(level3_nodes):
+            x = (i - 1.5) * NODE_SPACING
+            node_positions.append(RIGHT * x + UP * level3_y)  # Nodes 5-8
+        
+        # Level 4
+        level4_y = level3_y - LEVEL_SPACING
+        level4_nodes = 5
+        for i in range(level4_nodes):
+            x = (i - 2) * NODE_SPACING
+            node_positions.append(RIGHT * x + UP * level4_y)  # Nodes 9-13
+        
+        # Level 5 (Bottom)
+        level5_y = level4_y - LEVEL_SPACING
+        level5_nodes = 5
+        for i in range(level5_nodes):
+            x = (i - 2) * NODE_SPACING
+            node_positions.append(RIGHT * x + UP * level5_y)  # Nodes 14-18
+        
+        # Create nodes with random color segments
+        for i, pos in enumerate(node_positions, 1):
+            node = self.create_complex_node(pos, i)
+            nodes.add(node)
+        
+        # Create arrows between nodes ensuring hierarchical structure
+        arrows = VGroup()
+        connections = [
+            # From root (Node 1) to Level 2
+            (0, 1), (0, 2), (0, 3),
+            
+            # From Level 2 to Level 3
+            (1, 4), (1, 5), 
+            (2, 5), (2, 6),
+            (3, 6), (3, 7),
+            
+            # From Level 3 to Level 4
+            (4, 8), (4, 9),
+            (5, 9), (5, 10),
+            (6, 10), (6, 11),
+            (7, 11), (7, 12),
+            
+            # From Level 4 to Level 5
+            (8, 13), (8, 14),
+            (9, 14), (9, 15),
+            (10, 15), (10, 16),
+            (11, 16), (11, 17),
+            (12, 17),
+            
+            # Additional cross-connections for complexity
+            (2, 4), (2, 7),
+            (5, 8), (6, 12),
+            (9, 13), (10, 17),
+            (14, 16), (15, 17)
+        ]
+        
+        for start_idx, end_idx in connections:
+            start_node = nodes[start_idx]
+            end_node = nodes[end_idx]
+            arrow = Arrow(
+                start=start_node.get_center(),
+                end=end_node.get_center(),
+                buff=0.2,
+                color=GREEN,
+                max_tip_length_to_length_ratio=0.08,  # Smaller arrowheads
+                stroke_width=1.5  # Thinner arrows
+            )
+            arrows.add(arrow)
+        
+        # Create the complex graph group
+        complex_graph = VGroup(nodes, arrows)
+        
+        # Fade out hierarchy while fading in complex graph
+        self.play(
+            FadeOut(hierarchy_group),
+            FadeIn(complex_graph),
+            run_time=2
+        )
+        self.wait(0.5)
+        
+        # Fade out transition text
+        self.play(
+            FadeOut(transition_text),
+            run_time=1
+        )
+        
         # Hold final state
         self.wait(3)
