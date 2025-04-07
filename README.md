@@ -60,6 +60,7 @@ To get started with the project, follow the instructions below.
   ```sh
   curl -LsSf https://astral.sh/uv/install.sh | sh
   ```
+- Install [Manim Community Edition](https://docs.manim.community/en/stable/installation.html) locally on your device
 
 ### Installation
 
