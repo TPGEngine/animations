@@ -30,14 +30,15 @@
 
 ## About The Project
 
-This project aims to create animated explanations for Tangled Program Graphs (TPGs) using Manim, a powerful animation engine for explanatory math videos. It provides a framework for visualizing and understanding complex program graphs through engaging and informative animations.
+This project provides animated explanations of Tangled Program Graphs (TPGs) using Manim, an animation engine for explanatory math videos. It offers a framework for visualizing and understanding complex program graphs through engaging and informative animations. The animations cover various aspects of TPGs, including the challenge of balancing a rod, the evolution of TPG agents, hierarchical structures, and the decision-making process.
 
 ### Key Features
 
-- **Manim Integration:** Leverages the capabilities of Manim to create high-quality animations.
-- **TPG Visualization:** Specifically designed to visualize Tangled Program Graphs.
-- **Modular Structure:** Organized directory structure for assets, scenes, and utilities.
+- **Manim Integration:** Creates high-quality animations using Manim.
+- **TPG Visualization:** Designed to visualize Tangled Program Graphs and their behavior.
+- **Modular Structure:** Organizes assets, scenes, and utilities in a clear directory structure.
 - **Dependency Management:** Uses `pyproject.toml` and `uv.lock` for managing project dependencies and ensuring reproducibility.
+- **Scene-Based Animations:** Includes scenes for illustrating challenges, evolution, hierarchy, and results related to TPGs.
 
 ## Built With
 
@@ -72,6 +73,10 @@ To get started with the project, follow the instructions below.
 2. Install the dependencies using uv:
    ```sh
    uv sync
+   ```
+3. Running a scene (e.g. EvolutionScene):
+   ```sh
+   uv run manim -qh scenes/evolution.py EvolutionScene
    ```
 
 ## Acknowledgments
