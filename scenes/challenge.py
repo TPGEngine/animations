@@ -106,9 +106,17 @@ class ChallengeScene(Scene):
         )
         self.wait(2)
 
+        # Fade out solution text
+        self.play(
+            FadeOut(challenge_text),
+            FadeOut(explanation_text),
+            run_time=1
+        )
+        self.wait(0.5)
+
         # Create team circle
         team_circle = Circle(radius=1.5, color=BLUE)
-        team_circle.move_to(ORIGIN)
+        team_circle.move_to(ORIGIN)  # Start at origin
         team_label = Text("Decision Team", font_size=24).move_to(team_circle.get_center())
 
         # First transform the rod into a tree structure
@@ -138,18 +146,25 @@ class ChallengeScene(Scene):
         # Transform rod to tree
         self.play(
             Transform(object_to_balance, tree_branches),
-            FadeOut(explanation_text),
             run_time=1.5
         )
         self.wait(1)
 
-        # Then fade tree into team circle and remove original elements
+        # Then transform tree into team circle and remove original elements
         self.play(
-            Transform(tree_branches, team_circle),
+            ReplacementTransform(tree_branches, team_circle),
             FadeIn(team_label),
             FadeOut(base),
             FadeOut(ground),
             FadeOut(object_to_balance),
             run_time=1.5
         )
-        self.wait(3)
+        self.wait(1)
+
+        # Move team circle up
+        self.play(
+            team_circle.animate.move_to(ORIGIN + UP * 1.5),
+            team_label.animate.move_to(ORIGIN + UP * 1.5),
+            run_time=1
+        )
+        self.wait(1)
